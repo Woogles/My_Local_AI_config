@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-GENERAL_MODEL="${GENERAL_MODEL:-qwen3:14b}"
-CODER_MODEL="${CODER_MODEL:-qwen2.5-coder:14b}"
+GENERAL_MODEL="${GENERAL_MODEL:-qwen3:14b-q4_K_M}"
+CODER_MODEL="${CODER_MODEL:-qwen2.5-coder:14b-instruct-q4_K_M}"
+EXPECTED_QUANTIZATION="${EXPECTED_QUANTIZATION:-Q4_K_M}"
 
 if ! command -v ollama >/dev/null 2>&1; then
     printf 'Error: ollama is not installed or is not on PATH.\n' >&2
@@ -16,8 +17,33 @@ for model in "$GENERAL_MODEL" "$CODER_MODEL"; do
     fi
 done
 
+if [[ ! "$EXPECTED_QUANTIZATION" =~ ^[A-Z0-9_]+$ ]]; then
+    printf 'Error: quantization must contain only uppercase letters, numbers, and underscores.\n' >&2
+    exit 1
+fi
+
 modelfile="$(mktemp "${TMPDIR:-/tmp}/lab-agent.XXXXXX")"
 trap 'rm -f "$modelfile"' EXIT
+
+verify_quantization() {
+    local model="$1"
+    local details
+    local actual_quantization
+
+    if ! details="$(ollama show --verbose "$model")"; then
+        printf 'Error: could not inspect model metadata for %s.\n' "$model" >&2
+        exit 1
+    fi
+
+    actual_quantization="$(awk '$1 == "quantization" { print $2; exit }' <<<"$details")"
+    if [[ "$actual_quantization" != "$EXPECTED_QUANTIZATION" ]]; then
+        printf 'Error: %s uses quantization %s; expected %s.\n' \
+            "$model" "${actual_quantization:-unknown}" "$EXPECTED_QUANTIZATION" >&2
+        exit 1
+    fi
+
+    printf 'Verified %s quantization for %s.\n' "$actual_quantization" "$model"
+}
 
 create_agent() {
     local name="$1"
@@ -37,8 +63,10 @@ EOF
 
 printf 'Pulling general model %s...\n' "$GENERAL_MODEL"
 ollama pull "$GENERAL_MODEL"
+verify_quantization "$GENERAL_MODEL"
 printf 'Pulling coding model %s...\n' "$CODER_MODEL"
 ollama pull "$CODER_MODEL"
+verify_quantization "$CODER_MODEL"
 
 create_agent lab-codewright "$CODER_MODEL" 'You are a careful software engineer. Write, explain, and review maintainable code. Follow the language conventions, point out assumptions, and flag security or reliability risks. Do not claim to have run code you have not executed.'
 create_agent lab-network-planner "$GENERAL_MODEL" 'You are a home-networking specialist. Help plan Wi-Fi, VLANs, routing, DNS, and firewall rules. Explain traffic flow and call out lockout risks before suggesting changes.'
