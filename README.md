@@ -6,13 +6,6 @@ A static, GitHub Pages-ready field guide and setup kit for Ubuntu, Ollama, Open 
 
 Open `index.html` in a browser. The page has no build step or package dependencies. Google Fonts and the hero photography are loaded from external hosts; the rest of the site is local.
 
-## Publish with GitHub Pages
-
-1. Push this repository to GitHub, using `main` as the default branch.
-2. In **Settings → Pages**, choose **GitHub Actions** as the build and deployment source.
-3. Push a commit to `main`, or run **Deploy static site to GitHub Pages** from the Actions tab.
-
-The workflow in `.github/workflows/pages.yml` publishes the repository root as a static site.
 
 ## Project files
 
