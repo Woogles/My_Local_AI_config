@@ -1,0 +1,46 @@
+{
+  "name": "Local Ollama assistant smoke test",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7d3d2c60-ec0e-4f7d-bb5f-7a4e581761c3",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/chat",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { model: 'lab-assistant', messages: [{ role: 'user', content: 'Reply with a short confirmation that the local Ollama workflow is connected.' }], stream: false } }}",
+        "options": {}
+      },
+      "id": "c9f2b0ae-6c6d-4a46-bd5d-2d9c3f0f2740",
+      "name": "Ask local Ollama",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Ask local Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "31c006e4-4d07-4b75-951c-3870fc87e2d8"
+}
