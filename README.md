@@ -1,85 +1,131 @@
-# Fieldnotes: Local AI Command Center
+# Local AI Test Lab
 
-A static, GitHub Pages-ready field guide and setup kit for Ubuntu, Ollama, Open WebUI, n8n automation, Paperclip delegation, and focused home-lab agents.
+This repository is a small, hands-on project for testing local language models and home-lab automation on hardware I already have. It is not a production AI platform. The machine is resource-constrained, so the model choices, context size, and one-model-at-a-time settings are deliberate compromises based on the available hardware, not a claim that these are the best models for every system.
 
-## Preview locally
+The aim is to learn what works locally: install Ollama, try a modest model, compare a general and a coding model, create prompt-based specialist roles, and optionally connect a chat UI and a simple workflow. Model downloads and software installation need internet access; inference is intended to run on the local Ubuntu host.
 
-Open `index.html` in a browser. The page has no build step or package dependencies. Google Fonts and the hero photography are loaded from external hosts; the rest of the site is local.
+## Hardware and model choices
 
+The project is planned around a Dell Precision 5810 with an NVIDIA RTX 3060 (12 GB VRAM) and a GTX 1070 (8 GB VRAM). Confirm the actual installed cards, RAM, power supply, cooling, and driver support before using the guide; this hardware profile is a planning assumption, not an automated hardware check.
 
-## Project files
+- The RTX 3060's 12 GB is the main constraint for model placement and context memory.
+- The RTX 3060 and GTX 1070 do not become one 20 GB memory pool. Ollama may split model layers across GPUs, but placement and speed depend on the runtime and workload.
+- The setup starts with `qwen3:8b` as a manual smoke test, then the model script defaults to `qwen3:14b` for general roles and `qwen2.5-coder:14b` for coding. These are hardware-informed starting points to compare, not guaranteed to fit entirely in GPU memory or run quickly.
+- All specialist Modelfiles use a 4096-token context and temperature 0.2. If 14B models are too slow or exceed available memory, substitute smaller tags with the environment variables shown below.
+- The 17 specialist names are prompt-configured variants of two base models. They are not 17 separately trained models, and they do not all occupy GPU memory at once.
 
-- `index.html` contains the guide and agent directory.
-- `styles.css` contains the responsive visual system.
-- `script.js` handles agent filtering, search, command copying, and the mobile menu.
-- `setup_ollama.sh` installs Ollama when needed and configures its system service for safe local access.
-- `setup_models.sh` creates 17 Ollama specialist models: Qwen3 14B for general roles and Qwen2.5-Coder 14B for the coding role.
-- `setup_tailscale.sh` installs and starts Tailscale, then begins interactive tailnet login.
-- `setup_n8n.sh` creates a private n8n encryption key and starts the local-only Docker Compose service.
-- `automation/compose.yaml` runs n8n on host networking so workflows can reach Ollama's loopback API.
-- `automation/workflows/local-assistant-smoke-test.json` is an importable workflow that calls `lab-assistant`.
-- `setup_paperclip.sh` checks Node.js and Tailscale, then starts Paperclip's authenticated tailnet onboarding and service install.
+## Walkthrough
 
-## Set up Ollama
+### 1. Prepare the Ubuntu host
 
-Install the NVIDIA driver first and verify it with `nvidia-smi`. On the Ubuntu host, run:
+Install Ubuntu on the workstation, connect it to your network, update the system, and install the NVIDIA driver appropriate for the installed GPUs. Reboot and confirm the driver sees the cards:
+
+```bash
+nvidia-smi
+```
+
+Check temperatures, available system memory, storage space, and power/cooling before downloading large models. Model files take multiple gigabytes, and running a model can use both system RAM and GPU memory.
+
+### 2. Install and check Ollama
+
+From this project directory on the Ubuntu host, run:
 
 ```bash
 bash setup_ollama.sh
 ```
 
-The script installs Ollama with its official installer if it is missing, configures the systemd service to listen only on `127.0.0.1:11434`, and limits concurrent model loading to one. It is safe to rerun. For Open WebUI in Docker, configure host networking or another explicitly secured path to reach the host's loopback service; do not expose the Ollama API on all interfaces just to make the container connect.
+The script installs Ollama if needed and configures its system service to listen only on `127.0.0.1:11434`. It allows one loaded model at a time, which keeps this constrained test box from trying to load several models concurrently. Confirm the service responds:
 
-## Create the agent models
+```bash
+ollama list
+curl http://127.0.0.1:11434/api/tags
+```
 
-After Ollama reports ready, run:
+The Ollama API is intentionally not available directly to other LAN devices. Do not change it to listen on all interfaces just to make another application connect.
+
+### 3. Run a small first test
+
+Try one smaller general model before fetching the full specialist set:
+
+```bash
+ollama pull qwen3:8b
+ollama run qwen3:8b
+```
+
+Ask a few representative questions and observe response time, GPU use, and system memory. This separates basic inference testing from the larger model downloads. Use `Ctrl+D` to exit the interactive session.
+
+### 4. Create the specialist roles
+
+When the basic test is satisfactory, run:
 
 ```bash
 bash setup_models.sh
 ```
 
-The script pulls `qwen3:14b` and `qwen2.5-coder:14b`, then creates the `lab-*` models with role-specific system prompts. These are prompt-configured models, not separately trained weights. The Modelfiles limit context to 4096 tokens as a conservative starting point for 12 GB VRAM; monitor GPU and system memory before increasing it. The RTX 3060 and GTX 1070 do not combine into one VRAM pool. Re-running the script updates those named agent models.
+By default, this pulls `qwen3:14b` and `qwen2.5-coder:14b`, then creates 17 `lab-*` model names with role-specific system prompts. It does not train or fine-tune model weights. Each role is a named Modelfile based on one of those two base models; the script does not load all 17 into memory at the same time.
 
-Override either base model with `GENERAL_MODEL=your-model:tag CODER_MODEL=your-coder:tag bash setup_models.sh`. The 14B defaults are a quality-oriented starting point for this hardware; use smaller 7B/8B variants if you prefer faster responses or more context headroom. Ollama may distribute layers across both GPUs, but this depends on runtime placement and can affect throughput.
+If the 14B defaults are a poor fit for your measured performance, the script accepts other Ollama model tags. For example, a smaller general and coding pair can be selected with:
 
-## Add private remote access
+```bash
+GENERAL_MODEL=qwen3:8b CODER_MODEL=qwen2.5-coder:7b bash setup_models.sh
+```
 
-On the Ubuntu server, run:
+Model availability and behavior can change with Ollama library tags. Check the current model catalog and confirm the exact tags before pulling. Re-running the script recreates the named roles using the selected bases.
+
+### 5. Add a chat interface (optional)
+
+Open WebUI is not installed by the included scripts. Follow the current [Open WebUI installation documentation](https://docs.openwebui.com/) and create its first administrator account. Configure the container to reach the host Ollama API through a deliberate, secured network arrangement. The API binds to loopback; do not expose it publicly to make container connectivity easier. Keep WebUI authentication enabled.
+
+### 6. Add private remote access (optional)
+
+On Ubuntu, run:
 
 ```bash
 bash setup_tailscale.sh
 ```
 
-Follow the one-time sign-in URL printed by the script to authorize the server. Install the Tailscale app on your phone and sign in to the same tailnet. Get the server's tailnet IP with `tailscale ip -4`, then open `http://SERVER-TAILNET-IP:WEBUI-PORT` on the phone while Tailscale is connected. Use the port published by your Open WebUI setup; no router port-forwarding is required.
+Authorize the server using the one-time URL printed by Tailscale. Install Tailscale on your trusted client device and sign in to the same tailnet. Use the server's tailnet address to reach the Open WebUI port you configured. No router port-forwarding is needed. This is a private route to the UI; the included Ollama service remains loopback-only.
 
-The Ollama setup script binds its API to localhost, so this remote path is for Open WebUI, not direct Ollama API access. Keep WebUI authentication enabled and only add trusted devices to your tailnet. Home Assistant needs a separate, explicitly restricted Ollama network configuration if direct integration is required.
+### 7. Test a local workflow (optional)
 
-## Automate with n8n
-
-Install Docker Engine and Compose v2 on Ubuntu, then run:
+Install Docker Engine and Compose v2, then run:
 
 ```bash
 bash setup_n8n.sh
 ```
 
-The script generates `automation/.env` with a private encryption key (ignored by Git), pulls n8n's stable image, and starts it with a persistent Docker volume. The container uses host networking so an n8n HTTP Request node can call Ollama at `http://127.0.0.1:11434`; n8n itself listens only on `127.0.0.1:5678`. Open `http://127.0.0.1:5678` on the server and create the first-owner account. Import `automation/workflows/local-assistant-smoke-test.json` in the n8n UI to verify the `lab-assistant` connection.
+The script creates `automation/.env` with a private encryption key and starts n8n using the included host-network Compose configuration. n8n listens only on `127.0.0.1:5678`, while workflow requests can reach Ollama at `127.0.0.1:11434`. Open n8n on the Ubuntu host, create its first-owner account, and import `automation/workflows/local-assistant-smoke-test.json`. Run it manually to test the `lab-assistant` model.
 
-This local-only setup supports manual, schedule, and polling workflows. For inbound external webhooks, configure an authenticated private reverse proxy and the correct n8n webhook URL; do not publish port 5678 directly. The encryption key in `.env` is needed to decrypt stored credentials, so keep it in backups and never commit it.
+Keep `automation/.env` backed up and private; it is needed to decrypt saved credentials. Do not commit it or publish the n8n port. External webhooks require a separately secured ingress setup and are outside this starter configuration.
 
-## Delegate with Paperclip
+### 8. Explore Paperclip (optional)
 
-Install Node.js 24.11 or newer and connect the Ubuntu server to Tailscale first. Then, as your regular user (not root), run:
+Paperclip is an optional task and approval board, not a model runtime. It requires Node.js 24.11 or newer and a connected Tailscale host. Run the setup as your regular Ubuntu user, not as root:
 
 ```bash
 bash setup_paperclip.sh
 ```
 
-The script runs Paperclip's official npm onboarding in authenticated, private tailnet mode and installs its background service. Open `http://SERVER-TAILNET-IP:3100` from a device on the same tailnet. Paperclip is the task/org/approval board; n8n is the workflow runner. Paperclip does not automatically create the 17 Ollama roles or connect their models. Configure agent adapters and an Ollama-compatible provider explicitly in Paperclip, then use authenticated n8n HTTP Request credentials if a workflow should create or update Paperclip tasks. Never put API keys in exported workflow JSON.
+Configure a model provider and agent runtime inside Paperclip separately. The script does not create those credentials, connect the 17 Ollama roles, or make the task router call other models. Actual delegation needs an explicitly configured integration or workflow.
 
-## Notes on the setup guide
+## Project files
 
-- Agent roles are prompt configurations, not separately trained models.
-- A prompt alone does not make a coordinator invoke other models; real delegation needs a configured workflow or tool integration.
-- GPU VRAM is not pooled. Check model fit, power, cooling, and driver support against the actual workstation configuration.
-- Keep Ollama and the WebUI off the public internet. Use private remote access and deliberate firewall and authentication settings.
-- Review current upstream installation instructions for Ubuntu, Ollama, NVIDIA drivers, and Open WebUI before deploying.
+- `index.html` is the project overview and interactive specialist directory.
+- `styles.css` provides the responsive page styling; `script.js` handles search, filters, command copying, and mobile navigation.
+- `setup_ollama.sh` installs Ollama when needed and keeps its API on loopback.
+- `setup_models.sh` pulls the two configured base models and creates the 17 prompt-based specialist names.
+- `setup_tailscale.sh` installs Tailscale and starts interactive tailnet authorization.
+- `setup_n8n.sh`, `automation/compose.yaml`, and `automation/workflows/local-assistant-smoke-test.json` set up and test local n8n-to-Ollama calls.
+- `setup_paperclip.sh` starts Paperclip's private tailnet onboarding; provider setup is separate.
+- `Blueprint.txt` is an earlier planning draft, not current installation guidance. Its commands and model names do not match the maintained scripts, and it includes network exposure advice that conflicts with this project's loopback-only Ollama configuration. Follow the steps in this README and the current scripts instead.
+
+## Preview the project page
+
+Open `index.html` in a browser. The page is static and has no build step or package dependencies. Google Fonts and the hero photograph load from external hosts; the local page content and interactions work from the project files.
+
+## Keep the experiment safe
+
+- Treat local inference as a test, not a guarantee of private or secure application behavior. Choose carefully what data you send to any UI, workflow, or provider.
+- Keep Ollama and n8n off the public internet. Use authenticated UI access and private networking for remote use.
+- Verify model placement and performance on the actual host. GPU memory is not pooled, and longer contexts require more memory.
+- Review current Ubuntu, NVIDIA, Ollama, Docker, Open WebUI, Tailscale, and Paperclip documentation before installing or upgrading those tools.

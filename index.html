@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f2f1e9">
-    <meta name="description" content="Build a private, local AI command center with Ollama, Open WebUI, and a focused team of home-lab agents.">
-    <title>Fieldnotes | Local AI Command Center</title>
+    <meta name="description" content="A hardware-constrained local AI test project exploring Ollama, prompt-based roles, and home-lab automation.">
+    <title>Fieldnotes | Local AI Test Lab</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -17,20 +17,21 @@
     <header class="site-header">
       <a class="wordmark" href="#top" aria-label="Fieldnotes home">
         <span class="brand-mark" aria-hidden="true">F</span>
-        <span>FIELDNOTES<span class="wordmark-sub"> / LOCAL AI</span></span>
+        <span>FIELDNOTES<span class="wordmark-sub"> / LOCAL AI TEST</span></span>
       </a>
       <nav class="main-nav" aria-label="Main navigation">
-        <a href="#blueprint">Blueprint</a>
-        <a href="#setup">Setup</a>
+        <a href="#blueprint">Project</a>
+        <a href="#hardware">Hardware</a>
+        <a href="#workflow">Walkthrough</a>
         <a href="#automation">Automation</a>
         <a href="#agents">Agents</a>
         <a href="#care">Operations</a>
       </nav>
-      <a class="header-action" href="#setup"><span class="status-dot"></span> Build your stack <span aria-hidden="true">↗</span></a>
+      <a class="header-action" href="#setup"><span class="status-dot"></span> Start the test <span aria-hidden="true">↗</span></a>
       <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span></button>
     </header>
     <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
-      <a href="#blueprint">Blueprint</a><a href="#setup">Setup</a><a href="#automation">Automation</a><a href="#agents">Agents</a><a href="#care">Operations</a>
+      <a href="#blueprint">Project</a><a href="#hardware">Hardware</a><a href="#workflow">Walkthrough</a><a href="#setup">Setup</a><a href="#automation">Automation</a><a href="#agents">Roles</a><a href="#care">Limits</a>
     </nav>
 
     <main id="main">
@@ -38,58 +39,58 @@
         <img class="hero-image" src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2200&q=85" alt="Rows of illuminated server hardware in a data center" fetchpriority="high">
         <div class="hero-shade"></div>
         <div class="hero-content">
-          <p class="eyebrow hero-eyebrow"><span class="live-mark"></span> AN OPEN FIELD GUIDE · 01 / 04</p>
-          <h1 id="hero-title">Your lab.<br>Your models.<br><span>Your rules.</span></h1>
-          <p class="hero-intro">A practical blueprint for a private AI command center, running on hardware you own and shaped around the work you actually do.</p>
+          <p class="eyebrow hero-eyebrow"><span class="live-mark"></span> A LOCAL AI TEST PROJECT · 01 / 04</p>
+          <h1 id="hero-title">A small lab.<br>Local models.<br><span>Real limits.</span></h1>
+          <p class="hero-intro">An experiment in running language models on a constrained home-lab machine. The models and settings are chosen around the hardware available, then measured in actual use.</p>
           <div class="hero-actions">
-            <a class="button button-lime" href="#blueprint">Explore the blueprint <span aria-hidden="true">↓</span></a>
-            <a class="hero-text-link" href="#agents">Meet the agent roster <span aria-hidden="true">↗</span></a>
+            <a class="button button-lime" href="#blueprint">About this project <span aria-hidden="true">↓</span></a>
+            <a class="hero-text-link" href="#hardware">See the hardware limits <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-        <div class="hero-stamp"><span>LOCAL FIRST</span><span>NO CLOUD REQUIRED</span><span>OPEN SOURCE TOOLS</span></div>
-        <div class="hero-index" aria-hidden="true">FIELD GUIDE<br>45° 31' 12.0" N</div>
+        <div class="hero-stamp"><span>LOCAL INFERENCE</span><span>MODELS NEED DOWNLOADS</span><span>TEST BUILD</span></div>
+        <div class="hero-index" aria-hidden="true">HARDWARE-BOUNDED<br>LEARNING PROJECT</div>
       </section>
 
       <section class="ticker" aria-label="Project stack">
-        <span>THE STACK</span><span>OLLAMA</span><i></i><span>OPEN WEBUI</span><i></i><span>UBUNTU</span><i></i><span>YOUR HARDWARE</span><i></i><span>YOUR DATA</span>
+        <span>THE TEST</span><span>OLLAMA</span><i></i><span>UBUNTU</span><i></i><span>2 BASE MODELS</span><i></i><span>17 PROMPT ROLES</span><i></i><span>FINITE VRAM</span>
       </section>
 
       <section class="intro section-wrap" id="blueprint">
         <div class="section-label"><span>01</span><span>THE BLUEPRINT</span></div>
         <div class="intro-copy">
-          <p class="kicker">A capable lab starts with a small, dependable core.</p>
-          <h2>One machine.<br><span>A room full of expertise.</span></h2>
-          <p class="body-copy">Run language models on your own server, give each one a clear job, and reach them through a browser-based chat interface. Keep the setup understandable: models do the reasoning, agent prompts set the role, and you decide what leaves your network.</p>
+          <p class="kicker">A test bed, not a finished product</p>
+          <h2>Learn what fits.<br><span>Measure what doesn't.</span></h2>
+          <p class="body-copy">This project explores local inference, Ollama model setup, role-specific prompts, and a small automation path. It is intentionally modest: one host, limited GPU memory, and optional tools added only after a basic model works. Model downloads and software installs still need internet access.</p>
           <div class="stat-row">
-            <div><strong>01</strong><span>AI runtime</span></div><div><strong>02</strong><span>Chat interface</span></div><div><strong>17</strong><span>Focused roles</span></div>
+            <div><strong>01</strong><span>test host</span></div><div><strong>02</strong><span>base models</span></div><div><strong>17</strong><span>prompt roles</span></div>
           </div>
         </div>
         <aside class="note-card">
-          <span class="note-index">FIELD NOTE / 001</span>
+          <span class="note-index">HARDWARE NOTE / 001</span>
           <span class="note-symbol" aria-hidden="true">✳</span>
-          <h3>Prompts aren't training.</h3>
-          <p>An agent is a model paired with instructions and settings. Creating one does not retrain its weights; it gives a capable base model a consistent point of view.</p>
-          <a href="#agents">See how the roster is organized <span aria-hidden="true">↗</span></a>
+          <h3>Memory sets the ceiling.</h3>
+          <p>The planned RTX 3060 has 12 GB of VRAM. The GTX 1070 has its own separate 8 GB; the two cards do not become one 20 GB pool. That constraint shapes the model choices and expectations.</p>
+          <a href="#hardware">Review the test hardware <span aria-hidden="true">↗</span></a>
         </aside>
       </section>
 
-      <section class="spec-band" aria-label="Recommended server configuration">
-        <div class="spec-intro"><span class="eyebrow">A SOLID STARTING POINT</span><h2>Precision 5810<br><span>Build notes</span></h2></div>
-        <div class="spec-item"><span class="spec-number">A / GPU</span><strong>RTX 3060 · 12 GB</strong><p>Good first card for local inference. Leave VRAM headroom for the model's context.</p></div>
-        <div class="spec-item"><span class="spec-number">B / MEMORY</span><strong>System RAM matters</strong><p>Use matched, supported memory and check the workstation's CPU and DIMM configuration.</p></div>
-        <div class="spec-item"><span class="spec-number">C / STORAGE</span><strong>SSD for models</strong><p>Separate OS and model storage if convenient; leave space for multi-gigabyte downloads.</p></div>
-        <div class="spec-warning"><span aria-hidden="true">!</span><p><strong>Two GPUs do not combine their VRAM.</strong> Ollama may distribute layers across supported GPUs, but one model still needs a compatible fit. The starter agent script uses 14B quantized models with a 4K context as a cautious 3060 12 GB starting point. Monitor actual allocation; the GTX 1070 may help split layers, but it is not guaranteed to improve speed.</p></div>
+      <section class="spec-band" id="hardware" aria-label="Planned local AI test hardware">
+        <div class="spec-intro"><span class="eyebrow">THE PLANNED TEST MACHINE</span><h2>Precision 5810<br><span>Working assumptions</span></h2></div>
+        <div class="spec-item"><span class="spec-number">A / GRAPHICS</span><strong>RTX 3060 · 12 GB</strong><p>Main GPU memory constraint for model placement and context.</p></div>
+        <div class="spec-item"><span class="spec-number">B / SECOND GPU</span><strong>GTX 1070 · 8 GB</strong><p>Separate memory pool. Layer offload and speed depend on runtime placement.</p></div>
+        <div class="spec-item"><span class="spec-number">C / SYSTEM</span><strong>Verify RAM + storage</strong><p>Exact system memory and disk capacity are not specified here; check both before downloads.</p></div>
+        <div class="spec-warning"><span aria-hidden="true">!</span><p><strong>The model defaults are a hardware-informed test, not a fit guarantee.</strong> The included script pulls 14B general and coding models with a 4096-token context. Start with the separate 8B smoke test, watch memory use and response speed, and switch to smaller model tags if the actual host struggles. The RTX 3060 and GTX 1070 do not pool VRAM.</p></div>
       </section>
 
-      <section class="workflow section-wrap" aria-labelledby="workflow-title">
+      <section class="workflow section-wrap" id="workflow" aria-labelledby="workflow-title">
         <div class="section-label"><span>02</span><span>THE WORKFLOW</span></div>
         <div class="workflow-main">
-          <div class="section-heading-row"><div><p class="kicker">From bare metal to first answer</p><h2 id="workflow-title">Four moves.<br><span>Then you're off.</span></h2></div><p class="body-copy">A steady install beats a clever one. Bring up the machine first, then add the models and roles you need.</p></div>
+          <div class="section-heading-row"><div><p class="kicker">From host setup to measured inference</p><h2 id="workflow-title">Test in stages.<br><span>Add only what fits.</span></h2></div><p class="body-copy">First confirm the GPU and run one smaller model. Only then pull the larger defaults, create prompt roles, and add optional interfaces or automation.</p></div>
           <div class="steps">
             <article class="step"><span class="step-no">01</span><div><h3>Prepare the host</h3><p>Install Ubuntu 22.04 LTS, update packages, install the recommended NVIDIA driver, and reboot. Confirm the GPU with <code>nvidia-smi</code>.</p></div><span class="step-tag">HOST</span></article>
-            <article class="step"><span class="step-no">02</span><div><h3>Start the model engine</h3><p>Install Ollama and pull one model that fits your available VRAM. Start with a smaller quantized model before filling the disks.</p></div><span class="step-tag">OLLAMA</span></article>
+            <article class="step"><span class="step-no">02</span><div><h3>Smoke-test local inference</h3><p>Install Ollama and try <code>qwen3:8b</code> first. Observe response time and memory use before downloading the script's larger 14B defaults.</p></div><span class="step-tag">OLLAMA</span></article>
             <article class="step"><span class="step-no">03</span><div><h3>Bring up the chat UI</h3><p>Run Open WebUI in Docker, connect it to Ollama, and create the first administrator account on the private network.</p></div><span class="step-tag">WEB UI</span></article>
-            <article class="step"><span class="step-no">04</span><div><h3>Make a specialist</h3><p>Start with a Modelfile and a clear system prompt. Test the new role on a few real tasks before adding more agents.</p></div><span class="step-tag">AGENTS</span></article>
+            <article class="step"><span class="step-no">04</span><div><h3>Compare prompt roles</h3><p>The script creates 17 named roles from two base models. They are prompt configurations, not separately trained models or an autonomous team.</p></div><span class="step-tag">PROMPTS</span></article>
           </div>
         </div>
       </section>
@@ -97,7 +98,7 @@
       <section class="setup section-wrap" id="setup" aria-labelledby="setup-title">
         <div class="section-label"><span>03</span><span>FIRST BOOT</span></div>
         <div class="setup-main">
-          <div class="section-heading-row setup-heading"><div><p class="kicker">A minimal, inspectable start</p><h2 id="setup-title">One model.<br><span>One working chat.</span></h2></div><p class="body-copy">These are starter commands, not a blind-install script. Read them, verify each service, and keep Ollama private until you intentionally configure network access.</p></div>
+          <div class="section-heading-row setup-heading"><div><p class="kicker">Start small and inspect the result</p><h2 id="setup-title">Measure first.<br><span>Scale only if it fits.</span></h2></div><p class="body-copy">These commands install Ollama and test one smaller model. Check the machine's actual memory use and performance before running the larger model-creation script.</p></div>
           <div class="code-panel">
             <div class="code-top"><div><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="code-label">UBUNTU TERMINAL</span></div><button class="copy-button" type="button" data-copy="host-commands"><span aria-hidden="true">▣</span> Copy</button></div>
             <pre><code id="host-commands"># Update Ubuntu and install the NVIDIA driver
@@ -114,7 +115,7 @@ bash setup_ollama.sh
 # Fetch a modest model to verify inference
 ollama pull qwen3:8b
 ollama run qwen3:8b</code></pre>
-            <p class="code-foot"><span>01 — HOST + MODEL</span><span>Review the Ollama installer before running it.</span></p>
+            <p class="code-foot"><span>01 — HOST + 8B SMOKE TEST</span><span>Downloads require internet; inference runs on the host.</span></p>
           </div>
           <div class="setup-note"><span class="setup-note-icon" aria-hidden="true">↗</span><p><strong>Then add the interface.</strong> Follow the <a href="https://docs.openwebui.com/" target="_blank" rel="noreferrer">Open WebUI installation guide</a> for the current Docker command. The Ollama script below binds its API to loopback; configure the WebUI container with host networking or another deliberately secured path to reach it. Do not expose Ollama on every interface just to make Docker connect.</p></div>
           <div class="agent-script">
@@ -122,8 +123,8 @@ ollama run qwen3:8b</code></pre>
             <div class="agent-script-command"><span>FROM THE PROJECT FOLDER</span><div><code id="ollama-command">bash setup_ollama.sh</code><button class="copy-button" type="button" data-copy="ollama-command" aria-label="Copy Ollama setup command">▣</button></div><small>Then run <code>bash setup_models.sh</code> to create the 17 agent models.</small></div>
           </div>
           <div class="agent-script">
-            <div class="agent-script-copy"><span class="agent-script-label">AGENT CREATION SCRIPT</span><h3>Build all 17 specialists.</h3><p>Run this on the Ubuntu host after Ollama is installed and running. It uses <code>qwen3:14b</code> for 16 general roles and <code>qwen2.5-coder:14b</code> for coding. These are prompt-based models, not newly trained weights.</p><a href="setup_models.sh" download>Download setup_models.sh <span aria-hidden="true">↓</span></a></div>
-            <div class="agent-script-command"><span>FROM THE PROJECT FOLDER</span><div><code id="agent-command">bash setup_models.sh</code><button class="copy-button" type="button" data-copy="agent-command" aria-label="Copy agent script command">▣</button></div><small>Override models with <code>GENERAL_MODEL=... CODER_MODEL=... bash setup_models.sh</code></small></div>
+            <div class="agent-script-copy"><span class="agent-script-label">MODEL + PROMPT TEST</span><h3>Create 17 role variants.</h3><p>After testing the smaller model, this script defaults to <code>qwen3:14b</code> for general roles and <code>qwen2.5-coder:14b</code> for coding. The choices reflect this test machine's limited GPU memory; performance is not guaranteed. These are prompts over two base models, not newly trained weights.</p><a href="setup_models.sh" download>Download setup_models.sh <span aria-hidden="true">↓</span></a></div>
+            <div class="agent-script-command"><span>FROM THE PROJECT FOLDER</span><div><code id="agent-command">bash setup_models.sh</code><button class="copy-button" type="button" data-copy="agent-command" aria-label="Copy agent script command">▣</button></div><small>Use smaller available tags when needed: <code>GENERAL_MODEL=... CODER_MODEL=... bash setup_models.sh</code></small></div>
           </div>
           <div class="agent-script">
             <div class="agent-script-copy"><span class="agent-script-label">PRIVATE REMOTE ACCESS</span><h3>Join your server to Tailscale.</h3><p>Run this on Ubuntu. It installs the client, starts the service, and prints a one-time sign-in URL. No reusable auth key is stored in the script.</p><a href="setup_tailscale.sh" download>Download setup_tailscale.sh <span aria-hidden="true">↓</span></a></div>
@@ -160,7 +161,7 @@ ollama run qwen3:8b</code></pre>
       </section>
 
       <section class="agents-section" id="agents" aria-labelledby="agents-title">
-        <div class="agents-heading section-wrap"><div class="section-label"><span>05</span><span>THE ROSTER</span></div><div class="agents-title-row"><div><p class="kicker">A clear role, not a crowded prompt</p><h2 id="agents-title">Specialists for<br><span>the whole lab.</span></h2></div><p class="body-copy">Browse the starter roster. Each role can be built from a base model with its own instructions; choose only the ones that earn their place.</p></div>
+          <div class="agents-heading section-wrap"><div class="section-label"><span>05</span><span>PROMPT ROLE TESTS</span></div><div class="agents-title-row"><div><p class="kicker">Instructions change the role, not the weights</p><h2 id="agents-title">One small roster.<br><span>Two model bases.</span></h2></div><p class="body-copy">Browse the 17 starter prompts. Sixteen use the general base model and one uses the coding base model; choose only the roles that prove useful in testing.</p></div>
           <div class="agent-controls"><div class="filter-list" role="group" aria-label="Filter agents by specialty"><button class="filter-button active" type="button" data-filter="all" aria-pressed="true">All <span>17</span></button><button class="filter-button" type="button" data-filter="build" aria-pressed="false">Build <span>4</span></button><button class="filter-button" type="button" data-filter="operate" aria-pressed="false">Operate <span>6</span></button><button class="filter-button" type="button" data-filter="protect" aria-pressed="false">Protect <span>3</span></button><button class="filter-button" type="button" data-filter="explore" aria-pressed="false">Explore <span>4</span></button></div><label class="agent-search"><span class="search-icon" aria-hidden="true">⌕</span><span class="visually-hidden">Search agents</span><input id="agent-search" type="search" placeholder="Find a specialist" autocomplete="off"></label></div>
         </div>
         <div class="agent-grid section-wrap" id="agent-grid" aria-live="polite">
@@ -193,10 +194,10 @@ ollama run qwen3:8b</code></pre>
 
       <section class="faq section-wrap" aria-labelledby="faq-title"><div class="section-label"><span>08</span><span>FIELD QUESTIONS</span></div><div class="faq-main"><div><p class="kicker">A few quick clarifications</p><h2 id="faq-title">Before you<br><span>power it up.</span></h2></div><div class="faq-list"><details><summary>Will the RTX 3060 and GTX 1070 give me 20 GB of VRAM?</summary><p>No. Their memory pools stay separate. Ollama may spread a model across devices in some configurations, but this is not a single, fungible 20 GB pool. Plan around the model's actual allocation and leave room for context.</p></details><details><summary>Does each agent need its own model download?</summary><p>Not necessarily. Ollama-created models can share the same underlying layers when they use one base model. Keep a separate coding model only when its capabilities justify its extra disk and memory use.</p></details><details><summary>Can I open this up for Home Assistant and my phone?</summary><p>Prefer a private VPN such as Tailscale for remote access. For a local integration, use the server's LAN address only after checking authentication and firewall behavior. Never publish the Ollama API directly to the internet.</p></details><details><summary>Can the coordinator automatically hand work to agents?</summary><p>Not from a system prompt alone. You need an orchestration layer or tool workflow that explicitly invokes specialist models and passes their results back.</p></details></div></div></section>
 
-      <section class="closing"><div class="closing-image" role="img" aria-label="Lit server racks in a data center"></div><div class="closing-copy"><p class="eyebrow"><span class="live-mark"></span> YOUR LAB IS READY WHEN YOU ARE</p><h2>Start small.<br><span>Make it yours.</span></h2><a class="button button-lime" href="#setup">Go to first boot <span aria-hidden="true">↑</span></a></div><div class="closing-number">FN—001</div></section>
+      <section class="closing"><div class="closing-image" role="img" aria-label="Lit server racks in a data center"></div><div class="closing-copy"><p class="eyebrow"><span class="live-mark"></span> A CONSTRAINED LOCAL EXPERIMENT</p><h2>Start small.<br><span>Measure honestly.</span></h2><a class="button button-lime" href="#setup">Go to first test <span aria-hidden="true">↑</span></a></div><div class="closing-number">TEST BUILD / 001</div></section>
     </main>
 
-    <footer class="site-footer"><a class="wordmark footer-wordmark" href="#top"><span class="brand-mark" aria-hidden="true">F</span><span>FIELDNOTES<span class="wordmark-sub"> / LOCAL AI</span></span></a><p>Built for curious people who like knowing where their data lives.</p><div class="footer-links"><a href="https://github.com/" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="#top">Back to top ↑</a></div><span class="footer-meta">OPEN FIELD GUIDE · 2026</span></footer>
+    <footer class="site-footer"><a class="wordmark footer-wordmark" href="#top"><span class="brand-mark" aria-hidden="true">F</span><span>FIELDNOTES<span class="wordmark-sub"> / LOCAL AI TEST</span></span></a><p>A local-AI learning project shaped by the hardware on hand.</p><div class="footer-links"><a href="README.md">Project walkthrough <span aria-hidden="true">↗</span></a><a href="#top">Back to top ↑</a></div><span class="footer-meta">LOCAL TEST BUILD · 2026</span></footer>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
