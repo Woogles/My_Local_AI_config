@@ -8,10 +8,13 @@ These recommendations assume a **single NVIDIA GPU** running a local coding mode
 |---:|---|---|---|
 | **8 GB** | `gemma4:e4b` Q4 — fallback for this tier | `num_ctx: 8192`; `num_batch: 128` | `--ctx-size 8192 -b 256 -ub 128` |
 | **12–16 GB** | `gemma4:12b` Q4 | `num_ctx: 16384`; `num_batch: 256` | `--ctx-size 16384 -b 256 -ub 128` |
-| **24 GB** | `qwen3.6:27b-q4_K_M` | Start at `num_ctx: 16384`; try 32K if it fits comfortably; `num_batch: 256` | `--ctx-size 16384 -b 512 -ub 256` |
-| **32 GB** | `qwen3.6:35b-a3b-coding` | Start at `num_ctx: 16384`; try 32K if there’s room; `num_batch: 256` | `--ctx-size 16384 -b 512 -ub 256` |
+| **24 GB** | [`qwen3.6:27b-q4_K_M`](https://huggingface.co/Qwen/Qwen3.6-27B) | Start at `num_ctx: 16384`; try 32K if it fits comfortably; `num_batch: 256` | `--ctx-size 16384 -b 512 -ub 256` |
+| **32 GB** | [`qwen3.6:35b-a3b-coding`](https://huggingface.co/Qwen/Qwen3.6-35B-A3B) | Start at `num_ctx: 16384`; try 32K if there’s room; `num_batch: 256` | `--ctx-size 16384 -b 512 -ub 256` |
 | **48 GB** | `qwen3.6:27b-q8_0` | `num_ctx: 32768`; `num_batch: 512` | `--ctx-size 32768 -b 512 -ub 256` |
-| **80 GB+** | `qwen3.6:27b-bf16` | Start at `num_ctx: 65536`; `num_batch: 512` | `--ctx-size 65536 -b 512 -ub 256` |
+| **80 GB** | [`qwen3-coder-next`](https://ollama.com/library/qwen3-coder-next) — Ollama tag is about 52 GB; for llama.cpp, consider the [Q5_K_M GGUF](https://huggingface.co/Qwen/Qwen3-Coder-Next-GGUF), about 57.6 GB | `num_ctx: 32768`; `num_batch: 128`; keep parallel requests at one | `--ctx-size 32768 -b 256 -ub 128 --parallel 1` |
+| **320–384 GB** | [`Qwen3-Coder-480B-A35B-Instruct`](https://huggingface.co/unsloth/Qwen3-Coder-480B-A35B-Instruct-GGUF), Q4_K_M GGUF, about 290 GB. A multi-GPU setup is required; 320 GB is tight, so 384 GB gives more headroom. | Don’t assume an Ollama cloud tag runs locally. Use only if your Ollama version supports the local model artifact; start with `num_ctx: 16384` and `num_batch: 128`. | Use a local GGUF with `--n-gpu-layers all --split-mode layer --tensor-split 1,1,1,1 --ctx-size 16384 --parallel 1 --jinja --flash-attn on -b 128 -ub 64`. |
+| **1.1 TB+** | [`DeepSeek-V4-Pro`](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro), frontier-scale MoE; the mixed-precision checkpoint is about 865 GB. A typical starting point is 8× H200 141 GB GPUs. | Not a practical Ollama target; use a serving stack designed for multi-GPU clusters. | Not the recommended runtime for this deployment; use vLLM or SGLang. Start with a reduced context, such as 64K, and increase only after measuring memory use. |
+
 
 The Qwen3.6 Q4, Q8, and BF16 model files are listed at about **17 GB, 30 GB, and 56 GB**, respectively. The 35B-A3B coding option is listed at around **23–24 GB**. These are model-file sizes, not total runtime VRAM requirements; leave additional memory for context and runtime overhead.
 
