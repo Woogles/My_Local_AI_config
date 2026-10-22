@@ -1,0 +1,137 @@
+{
+  "hermes-boss": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "router",
+    "character": "Albus Dumbledore"
+  },
+
+  "hermes-codewright": {
+    "model": "qwen2.5-coder:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "development",
+    "character": "Hermione Granger"
+  },
+
+  "hermes-net": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "infrastructure",
+    "character": "Percy Weasley"
+  },
+
+  "hermes-virt": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "infrastructure",
+    "character": "Severus Snape"
+  },
+
+  "hermes-media": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "media",
+    "character": "Madam Pince"
+  },
+
+  "hermes-hw": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "hardware",
+    "character": "Arthur Weasley"
+  },
+
+  "hermes-security": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "security",
+    "character": "Mad-Eye Moody"
+  },
+
+  "hermes-mentor": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "education",
+    "character": "Minerva McGonagall"
+  },
+
+  "hermes-archivist": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "media",
+    "character": "Rowena Ravenclaw"
+  },
+
+  "hermes-jarvis": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "assistant",
+    "character": "Dobby"
+  },
+
+  "hermes-chaos": {
+    "model": "qwen3:14b",
+    "temperature": 0.4,
+    "context": 4096,
+    "category": "experimental",
+    "character": "Fred & George Weasley"
+  },
+
+  "hermes-backup": {
+    "model": "qwen3:14b",
+    "temperature": 0.1,
+    "context": 4096,
+    "category": "operations",
+    "character": "Argus Filch"
+  },
+
+  "hermes-monitor": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "monitoring",
+    "character": "Sybill Trelawney"
+  },
+
+  "hermes-iot": {
+    "model": "qwen3:14b",
+    "temperature": 0.2,
+    "context": 4096,
+    "category": "iot",
+    "character": "Kreacher"
+  },
+
+  "hermes-ai": {
+    "model": "qwen3:14b",
+    "temperature": 0.3,
+    "context": 4096,
+    "category": "ai",
+    "character": "Luna Lovegood"
+  },
+
+  "hermes-gate": {
+    "model": "qwen3:14b",
+    "temperature": 0.15,
+    "context": 4096,
+    "category": "network-edge",
+    "character": "The Fat Lady"
+  },
+
+  "hermes-wiki": {
+    "model": "qwen3:14b",
+    "temperature": 0.1,
+    "context": 4096,
+    "category": "documentation",
+    "character": "Tom Riddle"
+  }
+}
