@@ -12,9 +12,9 @@ The current README and setup scripts are safer and more consistent than the olde
 
 
 # Priority recommendations
-Priority|Finding|Recommended action
+Priority | Finding|Recommended action
 ------- | -------------------------
-High|.github/workflows/pages.yml uploads the repository root with path: .|Build a dedicated Pages artifact from an explicit allowlist. Include the site and only the project files intended for public download. Exclude .github, credentials, local state, and files marked obsolete.
+High | .github/workflows/pages.yml uploads the repository root with path: .|Build a dedicated Pages artifact from an explicit allowlist. Include the site and only the project files intended for public download. Exclude .github, credentials, local state, and files marked obsolete.
 High|Blueprint.txt contains outdated and unsafe instructions, including OLLAMA_HOST=0.0.0.0	|Remove it, or label it prominently as archived and unsafe. Do not link to it as setup guidance or publish it as an active project document.
 High|automation/compose.yaml uses network_mode: host|Prefer a dedicated container network and a narrowly scoped Ollama access path. If host networking is retained, explain that it removes container network isolation and require review of every imported or modified workflow.
 High|n8n uses a moving stable image tag|Pin a tested n8n image version. Upgrade deliberately after backup and testing, rather than silently following a moving tag.
