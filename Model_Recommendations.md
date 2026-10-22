@@ -1,6 +1,6 @@
 # Local Coding Models: GPU VRAM and Recommended Settings
 
-These recommendations assume a **single NVIDIA GPU** running a local coding model through Ollama or llama.cpp. VRAM tiers are practical starting points—not guaranteed minimums. Model weights, context length, runtime overhead, and other GPU applications all use memory.
+These recommendations assume a **single NVIDIA GPU** running a local coding model through Ollama or llama.cpp. VRAM tiers are practical starting points—not guaranteed minimums. Model weights, Model_Recommendations.mdcontext length, runtime overhead, and other GPU applications all use memory.
 
 ## Model and configuration recommendations
 
