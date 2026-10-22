@@ -1,3 +1,5 @@
+DEPRICATED 
+
 This guide is designed to take you from a blank server to a fully functioning AI Command Center. We are using a Dell Precision 5810 as the "Brain" to run several specialized AI models that can help with coding, managing your home lab, and controlling your home automation.
 Phase 1: Hardware Configuration
 
