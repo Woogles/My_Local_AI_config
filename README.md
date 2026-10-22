@@ -388,7 +388,15 @@ GitHub Pages should be used for documentation and approved project assets only.
 | setup_n8n.sh | n8n deployment |
 | setup_paperclip.sh | Paperclip deployment |
 | automation/ | n8n files and workflows |
+| DEPLOYMENT_CHECKLIST.md | Step-by-step deployment and validation runbook |
 
+## Deployment Checklist
+
+For a complete deployment and validation procedure, see:
+
+DEPLOYMENT_CHECKLIST.md
+
+This document serves as the project's operational runbook and acceptance checklist.
 ---
 
 ## Known Limitations
