@@ -1,565 +1,438 @@
-# ROADMAP
+# Local AI Test Lab
 
-## Project Status
+## Project Overview
 
-Local AI Test Lab is actively under development.
+Local AI Test Lab is a home-lab project focused on learning, testing, and experimenting with locally hosted AI models, automation tools, and supporting infrastructure.
 
-The core installation scripts and documentation provide a functional starting point for local AI experimentation, but several deployment, security, maintainability, and usability improvements remain planned.
+The goal is not to build a production AI platform. Instead, the project serves as a practical environment for:
 
-This roadmap tracks the major tasks, recommendations, and future work identified during project review.
+- Running local language models with Ollama
+- Evaluating model sizes and hardware limitations
+- Creating specialist AI roles through prompt engineering
+- Testing local AI workflows and automation
+- Exploring secure self-hosted AI deployments
+- Learning how AI tooling interacts with home-lab infrastructure
 
-The project's immediate objective is to create a stable, secure, and easily reproducible home-lab AI environment built around:
-
-- Ollama
-- Open WebUI
-- Optional automation tooling
-- Specialist AI roles
-- GitHub Pages documentation
-- Local-first deployment principles
+The project intentionally prioritizes simplicity, local operation, and security-conscious defaults over maximum performance or feature completeness.
 
 ---
 
-# Guiding Principles
+## Project Status
 
-As development continues, the project should remain aligned with the following principles:
+This project is currently under active development.
+
+The installation scripts, deployment flow, and documentation are functional but continue to evolve. Several planned improvements, security enhancements, and deployment refinements have not yet been implemented.
+
+Future enhancements, deployment recommendations, and outstanding work are tracked separately in `ROADMAP.md`.
+
+Before deploying any component, review the scripts and configuration files to ensure they meet your requirements and security expectations.
+
+---
+
+## Design Philosophy
+
+This project follows several guiding principles:
 
 - Local-first AI inference
 - Conservative security defaults
 - Loopback-only Ollama access
-- Authentication by default
-- Minimal network exposure
-- Reproducible deployments
-- Simplicity over unnecessary complexity
-- Measured performance validation before scaling
+- Measured testing before scaling
+- Minimal exposure of services
+- One-model-at-a-time operation on constrained hardware
+- Learning through experimentation rather than chasing benchmarks
+
+The intent is to understand what works reliably in a real home-lab environment while avoiding unnecessary complexity.
 
 ---
 
-# High Priority
+## Hardware Assumptions
 
-These items should be addressed before the project is considered mature.
+This project was planned around:
 
-## Implement Allowlisted GitHub Pages Publishing
+- Dell Precision 5810 workstation
+- NVIDIA RTX 3060 (12 GB VRAM)
+- NVIDIA GTX 1070 (8 GB VRAM)
+- 32 GB system RAM
+- Ubuntu Linux
 
-### Current State
+These specifications are assumptions, not requirements.
 
-GitHub Pages publishing is intended to expose both project documentation and selected project files.
+Always verify your actual hardware configuration before deploying models or downloading large assets.
 
-### Goal
+Important considerations:
 
-Create a dedicated publication directory and publish only reviewed files.
-
-### Benefits
-
-- Prevents accidental publication of repository contents
-- Reduces security risk
-- Makes the public site easier to maintain
-- Establishes a clean separation between source files and published artifacts
-
-### Tasks
-
-- Create a dedicated `public/` directory
-- Build GitHub Pages artifacts from an explicit allowlist
-- Exclude:
-  - GitHub workflows
-  - Local configuration
-  - Secrets
-  - Generated state
-  - Obsolete documents
+- GPU memory is not pooled.
+- A 12 GB GPU and 8 GB GPU do not provide a combined 20 GB VRAM pool.
+- Ollama may distribute model layers across GPUs in some situations, but actual placement and performance must be tested.
+- Context length, batch size, runtime overhead, and concurrent workloads all impact memory usage.
 
 ---
 
-## Open WebUI Deployment Automation
+## Recommended Deployment Sequence
 
-### Current State
+The recommended deployment order is:
 
-Open WebUI is documented but not fully automated through project-provided deployment assets.
+1. Verify hardware health and GPU detection.
+2. Install Ubuntu and NVIDIA drivers.
+3. Review project scripts before executing them.
+4. Install Ollama.
+5. Run the 8B smoke test.
+6. Deploy Open WebUI.
+7. Configure Tailscale (optional).
+8. Deploy n8n (optional).
+9. Deploy Paperclip (optional).
+10. Create specialist AI roles.
+11. Configure GitHub Pages publication (optional).
 
-### Goal
-
-Provide a repeatable deployment method.
-
-### Desired Outcome
-
-- Version-pinned deployment
-- Persistent storage
-- Backup guidance
-- Documented upgrades
-- Authentication enabled by default
-
-### Tasks
-
-- Create deployment definition
-- Pin image versions
-- Document upgrades
-- Document backups
-- Document recovery procedures
+This order allows hardware validation and performance testing before downloading large models or introducing additional services.
 
 ---
 
-## Pin Software Versions
+# Step 1: Verify Hardware
 
-### Current State
+Before installing any AI tooling, verify:
 
-Some deployments rely on moving version targets.
+- GPU detection
+- System temperatures
+- Storage capacity
+- Available RAM
+- Power supply stability
+- Cooling performance
 
-### Risk
+Confirm the NVIDIA driver detects both GPUs:
 
-Future deployments may behave differently than tested environments.
+```bash
+nvidia-smi
+```
 
-### Goal
+Also verify:
 
-Use explicit, reviewed versions whenever practical.
+- Disk space for model downloads
+- Available system memory
+- GPU temperatures under load
 
-### Candidate Targets
-
-- n8n
-- Paperclip
-- Open WebUI
-- Related containers
-- GitHub Actions
-
-### Tasks
-
-- Identify tested versions
-- Document version matrix
-- Upgrade through deliberate review rather than automatic drift
+Do not assume published hardware specifications match the actual workstation configuration.
 
 ---
 
-## Review Network Architecture
+# Step 2: Install Ollama
 
-### Current State
+From the project directory:
 
-The networking model remains functional but intentionally conservative.
+```bash
+bash setup_ollama.sh
+```
 
-### Goal
+The script configures Ollama to:
 
-Develop documented network architecture for:
+- Listen only on `127.0.0.1:11434`
+- Limit concurrent model loading
+- Use conservative settings appropriate for a small home-lab environment
 
-- LAN access
-- Tailscale access
-- Optional reverse proxy deployment
-- Service isolation
+Verify the service:
 
-### Questions To Resolve
+```bash
+ollama list
 
-- Which services should be LAN-accessible?
-- Which services should remain local-only?
-- Should a reverse proxy become standard?
-- How should authentication be enforced?
+curl http://127.0.0.1:11434/api/tags
+```
 
----
+The Ollama API should remain bound to loopback.
 
-## Authentication Review
-
-### Goal
-
-Ensure all user-facing services require authentication.
-
-### Scope
-
-- Open WebUI
-- n8n
-- Paperclip
-- Future services
-
-### Tasks
-
-- Verify authentication defaults
-- Review recovery procedures
-- Document administrator setup
-- Document access-control recommendations
+Do not expose port 11434 directly to your LAN, Tailscale network, or the public internet.
 
 ---
 
-# Medium Priority
+# Step 3: Run the Initial Smoke Test
 
-Important improvements that enhance reliability and maintainability.
+Before pulling larger models, test a smaller model first.
 
-## Improve Secret Management
+```bash
+ollama pull qwen3:8b-q4_K_M
 
-### Current State
-
-Secret handling remains basic.
-
-### Goal
-
-Reduce risk of accidental exposure.
-
-### Tasks
-
-- Expand ignore rules
-- Review configuration storage
-- Review backup procedures
-- Add secret-scanning workflow
-- Document credential rotation procedures
-
----
-
-## Expand .gitignore
-
-### Current State
-
-Only limited generated files are excluded.
-
-### Goal
-
-Protect common local artifacts.
-
-### Candidate Additions
-
-- Environment files
-- Temporary data
-- Local databases
-- Container volumes
-- IDE configuration
-- Build outputs
-
-### Notes
-
-`.gitignore` should be treated as a convenience feature, not a security boundary.
-
----
-
-## Service Configuration Backups
-
-### Goal
-
-Prevent configuration loss during upgrades and experimentation.
-
-### Areas of Interest
-
-- Open WebUI
-- n8n
-- Paperclip
-- Ollama configuration
-
-### Tasks
-
-- Identify critical files
-- Document backup locations
-- Create restore procedures
-- Validate disaster recovery process
-
----
-
-## Improve Accessibility
-
-### Current State
-
-Accessibility has not yet been fully reviewed.
-
-### Goal
-
-Improve usability across devices and input methods.
-
-### Areas To Evaluate
-
-- Keyboard navigation
-- Focus visibility
-- Contrast
-- Screen-reader compatibility
-- Mobile usability
-
-### Tasks
-
-- Add visible focus indicators
-- Improve keyboard workflows
-- Improve navigation behavior
-- Verify responsive layouts
-
----
-
-## Deployment Documentation Consistency
-
-### Goal
-
-Establish a single source of truth.
-
-### Tasks
-
-- Keep README current
-- Update ROADMAP alongside major project changes
-- Remove obsolete instructions
-- Ensure installation order remains consistent
-
----
-
-## Improve Service Recovery Documentation
-
-### Goal
-
-Make rebuilding the environment easier.
-
-### Tasks
-
-Document:
-
-- Initial deployment
-- Backup restoration
-- Credential recovery
-- Service migration
-- Hardware replacement scenarios
-
----
-
-# Low Priority
-
-Useful improvements that can wait until core functionality stabilizes.
-
-## Model Cleanup Guidance
-
-### Goal
-
-Help users manage disk usage.
-
-### Areas
-
-- Old base models
-- Experimental model downloads
-- Specialist role cleanup
-
-### Tasks
-
-- Document cleanup commands
-- Explain storage consumption
-- Provide safe removal examples
-
----
-
-## GitHub Actions Hardening
-
-### Goal
-
-Improve supply-chain security.
-
-### Tasks
-
-- Review Actions usage
-- Pin reviewed commit SHAs
-- Document update process
-
----
-
-## Documentation Refinement
-
-### Goal
-
-Improve readability and onboarding.
-
-### Ideas
-
-- Add architecture diagrams
-- Add screenshots
-- Add troubleshooting guides
-- Add FAQ section
-- Add deployment examples
-
----
-
-# Future Research
-
-These topics are exploratory and may significantly alter future project direction.
-
-## Larger Models
+ollama run qwen3:8b-q4_K_M
+```
 
 Evaluate:
 
-- 27B models
-- 35B coding models
-- High-VRAM deployments
-- Multi-GPU capable workloads
-
-Areas of interest:
-
-- Inference speed
-- Memory behavior
-- Practical usefulness
-
----
-
-## Multi-GPU Behavior
-
-Explore:
-
-- Layer distribution
-- Performance impact
-- Real-world VRAM utilization
-- Model placement strategies
-
-This project currently assumes practical constraints rather than idealized hardware scaling.
-
----
-
-## Alternative Runtimes
-
-Potential evaluation targets:
-
-- llama.cpp
-- vLLM
-- SGLang
-- Future local inference runtimes
-
-Evaluation criteria:
-
+- Response speed
+- GPU utilization
+- RAM usage
+- Temperature behavior
 - Stability
-- Deployment complexity
-- Resource requirements
-- Model compatibility
+
+Monitor utilization during testing:
+
+```bash
+nvidia-smi
+```
+
+Exit the test session with:
+
+```text
+Ctrl+D
+```
 
 ---
 
-## Reverse Proxy Architecture
+# Step 4: Deploy Open WebUI
 
-Potential future investigation:
+Open WebUI is the recommended interface for the reference deployment.
 
-- Caddy
-- Nginx
-- Traefik
+For users adapting this repository to their own environment, Open WebUI remains optional. However, it is treated as a core component of the intended lab architecture.
 
-Goals:
+Deploy Open WebUI with:
 
-- Unified authentication
-- TLS termination
-- Cleaner service exposure
-- Simplified remote access
+- Authentication enabled
+- Persistent data storage
+- Access restricted to trusted devices
+- Connectivity to local Ollama
 
----
+Recommended practices:
 
-## Offline-First Operation
+- Keep administrator access protected.
+- Retain persistent storage between upgrades.
+- Back up configuration and chat history as needed.
+- Do not expose the service directly to the public internet.
 
-Research opportunities:
-
-- Self-hosted fonts
-- Local static assets
-- Reduced external dependencies
-- Fully offline deployment
+Open WebUI should communicate with Ollama while Ollama remains bound to loopback.
 
 ---
 
-## Model Evaluation Framework
+# Step 5: Tailscale (Optional)
 
-Create a repeatable process for evaluating:
+Tailscale provides secure remote access without router port forwarding.
 
-- Accuracy
-- Response quality
-- Speed
-- Memory usage
-- Resource efficiency
+Install:
 
-Potential outputs:
+```bash
+bash setup_tailscale.sh
+```
 
-- Benchmark notes
-- Recommendation tables
-- Hardware sizing guidance
+Authorize the machine using the provided URL.
 
----
+Once connected, trusted devices on the same tailnet can access approved services without exposing them publicly.
 
-# Security Review Checklist
+Tailscale membership should not replace application authentication.
 
-Before declaring the project ready for broader use, confirm:
+Continue using:
 
-- [ ] Ollama remains bound to loopback
-- [ ] Open WebUI requires authentication
-- [ ] n8n requires authentication
-- [ ] Paperclip requires authentication
-- [ ] Secrets are excluded from Git
-- [ ] Backups are documented
-- [ ] Restore procedures are tested
-- [ ] Network exposure is documented
-- [ ] GitHub Pages publishes only approved files
-- [ ] Router port forwarding remains disabled unless intentionally required
-- [ ] Service updates follow a documented process
+- Strong passwords
+- Service authentication
+- Access controls
 
 ---
 
-# Performance Validation Checklist
+# Step 6: n8n (Optional)
 
-Before expanding model size:
+n8n can be used to build AI workflows and automation.
 
-- [ ] Verify both GPUs are detected
-- [ ] Verify driver installation
-- [ ] Run 8B smoke test
-- [ ] Measure GPU utilization
-- [ ] Measure RAM utilization
-- [ ] Measure temperatures
-- [ ] Measure response speed
-- [ ] Validate system stability
-- [ ] Verify storage usage
-- [ ] Document observations
+Install:
 
----
+```bash
+bash setup_n8n.sh
+```
 
-# Deployment Milestones
+Example uses:
 
-## Milestone 1 – Foundation
+- AI-assisted workflows
+- Notification pipelines
+- Internal automation
+- Multi-step prompts
 
-- [ ] Ubuntu deployment completed
-- [ ] NVIDIA drivers installed
-- [ ] Ollama installed
-- [ ] 8B smoke test completed
+Important considerations:
 
----
-
-## Milestone 2 – User Interface
-
-- [ ] Open WebUI deployed
-- [ ] Authentication configured
-- [ ] Persistent storage configured
-- [ ] Backup process documented
+- Treat workflows as executable code.
+- Review imported workflows before activating them.
+- Protect credentials and secrets.
+- Back up the n8n encryption key.
+- Keep access restricted to trusted users.
 
 ---
 
-## Milestone 3 – Remote Access
+# Step 7: Paperclip (Optional)
 
-- [ ] Tailscale deployed
-- [ ] Access policies reviewed
-- [ ] Remote access validated
+Paperclip can be used for task management and AI-assisted project workflows.
 
----
+Install:
 
-## Milestone 4 – Automation
+```bash
+bash setup_paperclip.sh
+```
 
-- [ ] n8n deployed
-- [ ] Encryption key secured
-- [ ] Workflow testing completed
+Paperclip is not required for local inference.
 
----
+Use it if you wish to experiment with:
 
-## Milestone 5 – Task Management
+- Task coordination
+- Agent workflows
+- Project planning
+- AI-assisted operations
 
-- [ ] Paperclip deployed
-- [ ] Version pinned
-- [ ] Authentication validated
-
----
-
-## Milestone 6 – Specialist Models
-
-- [ ] Base models downloaded
-- [ ] Specialist roles created
-- [ ] Performance documented
+Always enable authentication and review network exposure carefully.
 
 ---
 
-## Milestone 7 – Publication
+# Step 8: Create Specialist Models
 
-- [ ] GitHub Pages allowlist implemented
-- [ ] Documentation reviewed
-- [ ] Public artifact validated
+Once the smoke test is successful, create the specialist AI roles:
+
+```bash
+bash setup_models.sh
+```
+
+By default the script:
+
+- Pulls a general-purpose model
+- Pulls a coding-focused model
+- Creates multiple role-based variants
+- Applies role-specific system prompts
+
+These are not separately trained models.
+
+They are prompt-based role configurations built on shared base models.
+
+The specialist roles exist to make common home-lab tasks easier without requiring users to repeatedly re-enter instructions.
 
 ---
 
-# Long-Term Vision
+## Example Specialist Roles
 
-The long-term goal is to build a practical, secure, and well-documented AI home lab that demonstrates how local AI models, automation workflows, and supporting infrastructure can operate together on modest hardware.
+| Role | Purpose |
+|--------|--------|
+| lab-assistant | General assistance |
+| lab-codewright | Coding help |
+| lab-network-planner | Networking guidance |
+| lab-platform-keeper | Containers and virtualization |
+| lab-security-analyst | Security reviews |
+| lab-media-curator | Media management |
+| lab-home-systems | Home Assistant and IoT |
+| lab-signal-watch | Monitoring and alerting |
+| lab-recovery-planner | Backup and recovery |
+| lab-model-tuner | AI model tuning |
 
-The project is intended to remain:
+These roles share the same underlying model weights and do not all occupy GPU memory at the same time.
 
-- Educational
-- Reproducible
-- Security-conscious
-- Adaptable
-- Open to experimentation
+---
 
-Success is defined not by running the largest available model, but by building a system that is understandable, maintainable, and useful in day-to-day home-lab scenarios.
+## Model Selection Guidance
+
+Detailed model recommendations have been separated into:
+
+```text
+Model_Recommendations.md
+```
+
+That document covers:
+
+- GPU memory tiers
+- Ollama recommendations
+- llama.cpp recommendations
+- Context sizing
+- Quantization guidance
+- VRAM planning
+- Runtime tuning considerations
+
+Always test actual performance on your hardware rather than relying solely on published recommendations.
+
+---
+
+## Security Considerations
+
+This project intentionally favors conservative defaults.
+
+Recommended practices:
+
+- Keep Ollama bound to loopback.
+- Do not expose port 11434.
+- Require authentication for all web interfaces.
+- Avoid router port forwarding.
+- Restrict access to trusted devices.
+- Review AI workflows before activation.
+- Keep backups of configuration and application data.
+- Protect encryption keys and secrets.
+- Review scripts before running them.
+
+Remember:
+
+Running locally improves privacy but does not automatically make a system secure.
+
+---
+
+## GitHub Pages Publication (Optional)
+
+This project may be published through GitHub Pages.
+
+When publishing:
+
+- Use an allowlisted set of files.
+- Treat all published files as public.
+- Do not publish secrets.
+- Do not rely on `.gitignore` as a security boundary.
+- Review publication artifacts before deployment.
+
+GitHub Pages should be used for documentation and approved project assets only.
+
+---
+
+## Project Files
+
+| File | Purpose |
+|--------|--------|
+| README.md | Primary documentation |
+| ROADMAP.md | Planned improvements and future work |
+| Model_Recommendations.md | Hardware and model sizing guidance |
+| setup_ollama.sh | Ollama installation and configuration |
+| setup_models.sh | Specialist model creation |
+| setup_tailscale.sh | Tailscale installation |
+| setup_n8n.sh | n8n deployment |
+| setup_paperclip.sh | Paperclip deployment |
+| automation/ | n8n files and workflows |
+
+---
+
+## Known Limitations
+
+This project remains a work in progress.
+
+Current limitations include:
+
+- Configuration may change over time.
+- Version pinning is not fully implemented.
+- Network architecture continues to evolve.
+- Open WebUI deployment automation is not yet complete.
+- Hardware assumptions may not match all environments.
+- Larger models may not perform acceptably on constrained hardware.
+
+Users should treat the project as an experimental learning environment rather than a finished platform.
+
+---
+
+## Future Work
+
+Planned enhancements and recommendations are maintained in:
+
+```text
+ROADMAP.md
+```
+
+Areas under active consideration include:
+
+- Version pinning
+- Deployment automation
+- Security hardening
+- Accessibility improvements
+- Networking refinement
+- GitHub Pages improvements
+- Larger model testing
+- Multi-GPU experimentation
+
+---
+
+## Final Notes
+
+This project exists primarily as a learning environment for understanding local AI deployment in a real home-lab setting.
+
+Start small, measure performance, validate assumptions, and scale only after you understand how the system behaves on your actual hardware.
+
+Reliable systems are built through observation and iteration, not by immediately deploying the largest model that fits on paper.
